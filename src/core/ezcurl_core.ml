@@ -434,17 +434,14 @@ module Make (IO : IO) : S with type 'a io = 'a IO.t = struct
     | POST [] when content <> None -> Curl.set_post self.curl true
     | POST l -> Curl.set_httppost self.curl l
     | GET -> Curl.set_httpget self.curl true
-    | PUT ->
-      Curl.set_customrequest self.curl "PUT";
-      Curl.set_upload self.curl true
+    | (PUT | PATCH) as meth ->
+      Curl.set_customrequest self.curl (string_of_meth meth);
+      if content <> None then Curl.set_upload self.curl true
     | DELETE -> Curl.set_customrequest self.curl "DELETE"
     | HEAD -> Curl.set_customrequest self.curl "HEAD"
     | CONNECT -> Curl.set_customrequest self.curl "CONNECT"
     | OPTIONS -> Curl.set_customrequest self.curl "OPTIONS"
-    | TRACE -> Curl.set_customrequest self.curl "TRACE"
-    | PATCH ->
-      Curl.set_customrequest self.curl "PATCH";
-      Curl.set_upload self.curl true);
+    | TRACE -> Curl.set_customrequest self.curl "TRACE");
 
     _set_headers self !headers;
     Curl.set_headerfunction self.curl (fun s0 ->
