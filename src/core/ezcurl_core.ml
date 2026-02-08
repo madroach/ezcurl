@@ -1,3 +1,4 @@
+
 let opt_iter ~f = function
   | None -> ()
   | Some x -> f x
@@ -441,7 +442,9 @@ module Make (IO : IO) : S with type 'a io = 'a IO.t = struct
     | CONNECT -> Curl.set_customrequest self.curl "CONNECT"
     | OPTIONS -> Curl.set_customrequest self.curl "OPTIONS"
     | TRACE -> Curl.set_customrequest self.curl "TRACE"
-    | PATCH -> Curl.set_customrequest self.curl "PATCH");
+    | PATCH ->
+      Curl.set_customrequest self.curl "PATCH";
+      Curl.set_upload self.curl true);
 
     _set_headers self !headers;
     Curl.set_headerfunction self.curl (fun s0 ->
