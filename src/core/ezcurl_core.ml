@@ -203,6 +203,7 @@ type meth =
   | OPTIONS
   | TRACE
   | PATCH
+  | HTTP_CUSTOM of string
 
 let string_of_meth = function
   | GET -> "GET"
@@ -214,6 +215,7 @@ let string_of_meth = function
   | OPTIONS -> "OPTIONS"
   | TRACE -> "TRACE"
   | PATCH -> "PATCH"
+  | HTTP_CUSTOM s -> s
 
 let pp_meth out m = Format.pp_print_string out (string_of_meth m)
 
@@ -442,7 +444,10 @@ module Make (IO : IO) : S with type 'a io = 'a IO.t = struct
     | HEAD -> Curl.set_customrequest self.curl "HEAD"
     | CONNECT -> Curl.set_customrequest self.curl "CONNECT"
     | OPTIONS -> Curl.set_customrequest self.curl "OPTIONS"
-    | TRACE -> Curl.set_customrequest self.curl "TRACE");
+    | TRACE -> Curl.set_customrequest self.curl "TRACE"
+    | HTTP_CUSTOM s ->
+      Curl.set_customrequest self.curl s;
+      if content <> None then Curl.set_upload self.curl true);
 
     _set_headers self !headers;
     Curl.set_headerfunction self.curl (fun s0 ->
