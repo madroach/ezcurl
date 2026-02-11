@@ -68,7 +68,11 @@ module Config = struct
   let to_string s = Format.asprintf "%a" pp s
 end
 
-type t = { curl: Curl.t; set_opts : Curl.t -> unit }
+type t = {
+  curl: Curl.t;
+  set_opts: Curl.t -> unit;
+}
+
 type client = t
 
 let _top_mutex = Mutex.create ()
